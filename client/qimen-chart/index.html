@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>奇门遁甲 · 九宫盘（多局 / 多设置前端原型 v0.2）</title>
+<link rel="stylesheet" href="qimen.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="seal">門</span>
+      <div>
+        <h1>奇门遁甲 · 九宫盘</h1>
+        <p class="sub">多局 / 多起局方式 / 多盘式 · 前端原型 v0.2（引擎示例数据）</p>
+      </div>
+    </div>
+    <nav class="tabs" data-tabs id="scene-tabs"></nav>
+    <div class="top-actions">
+      <span class="pill" id="pill-mode">载入中…</span>
+      <span class="pill pill-soft" id="pill-school">默认：时家 · 转盘 · 拆补</span>
+      <span class="pill pill-soft">示例盘由引擎生成</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="settings-card">
+      <div class="settings-head">
+        <span class="settings-title">排盘设置</span>
+        <span class="settings-flags" id="settings-flags"></span>
+        <button type="button" id="btn-reset-settings">重置本局设置</button>
+      </div>
+      <div class="settings-grid" id="settings-grid"></div>
+      <div class="settings-foot">默认流派：时家奇门 · 转盘 · 拆补法 · 中五寄坤二（现代主流常用）。未实现/未校核项在选项中带「实验/待校核」标签；引擎未实现的组合不生成示例盘，盘面显示「—」，不以其他盘冒充。</div>
+    </section>
+
+    <section class="banner" id="banner" hidden></section>
+
+    <section class="meta-card">
+      <div class="meta-row">
+        <div class="meta-date" id="meta-date">—</div>
+        <div class="meta-term" id="meta-term">—</div>
+      </div>
+      <div class="pillars" id="pillars"></div>
+      <div class="ju-line" id="ju-line"></div>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <section class="mingyun-card" id="mingyun-card" hidden>
+      <div class="mingyun-head"><span>命运局 · 原命局 + 十步大运局</span><span class="mingyun-note" id="mingyun-note"></span></div>
+      <div class="mingyun-strip" id="mingyun-strip"></div>
+    </section>
+
+    <section class="chart-card">
+      <div class="chart-head">
+        <span>九宫盘面</span>
+        <span class="hint" id="chart-hint">—</span>
+      </div>
+      <div class="qimen-grid" id="qimen-grid"></div>
+      <div class="chart-placeholder" id="chart-placeholder" hidden></div>
+    </section>
+
+    <section class="detail-card" id="detail-card"></section>
+
+    <section class="bottom-card">
+      <div class="bottom-meta" id="bottom-meta"></div>
+      <div class="controls">
+        <label><input type="checkbox" id="opt-angan" checked /> 显示暗干</label>
+        <label><input type="checkbox" id="opt-wangshuai" checked /> 显示旺衰</label>
+        <label><input type="checkbox" id="opt-chuanren" checked /> 显示穿壬</label>
+        <label><input type="checkbox" id="opt-notes" checked /> 显示备注</label>
+        <button type="button" id="btn-reset">重置选择</button>
+      </div>
+      <div class="legend">
+        <span class="legend-shen">八神</span>
+        <span class="legend-star">九星</span>
+        <span class="legend-door">八门</span>
+        <span class="legend-gan">天/地盘干</span>
+        <span class="legend-cr">穿壬</span>
+        <span class="legend-tag">空/马</span>
+      </div>
+    </section>
+
+    <p class="api-hint">API：<code>QimenChart.render(data)</code> · <code>setSettings({...})</code> · <code>selectTab(id)</code> · <code>setOption(k,v)</code> · <code>select(index)</code> · <code>onSelect</code></p>
+  </main>
+
+<script src="sample-data.js"></script>
+<script src="qimen.js"></script>
+</body>
+</html>

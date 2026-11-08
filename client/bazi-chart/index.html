@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>八字命盘 · 专业细盘（半仙·鲸娘 前端原型）</title>
+<link rel="stylesheet" href="bazi.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="seal">鯨</span>
+      <div>
+        <h1>八字命盘 · 专业细盘</h1>
+        <p class="sub">自研八字客户端原型 v0.1（示例数据）</p>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab on" data-page="pan">排盘</button>
+      <button class="tab" data-page="hehun">合婚</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 排盘页 -->
+    <section id="page-pan" class="page">
+      <div class="meta-card">
+        <div class="meta-main">
+          <span class="animal">🐎</span>
+          <div>
+            <div class="meta-name" id="meta-name">示例盘 · 元男</div>
+            <div class="meta-line" id="meta-line">农历：癸未年 四月 某日 未时 ｜ 阳历：2003年5月…（示例）</div>
+            <div class="meta-line small" id="meta-line2">起运：出生后5年9月9天1时起运 ｜ 交运：逢己、甲年立春后28天交大运 ｜ 司令：丙</div>
+          </div>
+        </div>
+        <div class="meta-actions">
+          <span class="pill">丙火日元</span>
+          <span class="pill">乾造</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-scroll" id="chart-scroll">
+          <div class="chart-grid" id="chart"></div>
+        </div>
+      </div>
+
+      <div class="selector-card">
+        <div class="selector-head">
+          <div class="selector-title">大运 <span class="hint">点击切换，当前高亮</span></div>
+        </div>
+        <div class="strip" id="dayun-strip"></div>
+      </div>
+
+      <div class="selector-card">
+        <div class="selector-head">
+          <div class="selector-title">流年 <span class="hint" id="liunian-hint">当前大运 10 年</span></div>
+        </div>
+        <div class="strip" id="liunian-strip"></div>
+      </div>
+
+      <div class="selector-card">
+        <div class="selector-head">
+          <div class="selector-title">流月 <span class="hint" id="liuyue-hint">节气换月</span></div>
+        </div>
+        <div class="strip" id="liuyue-strip"></div>
+      </div>
+
+      <p class="api-hint">API：<code>BaziChart.render(data)</code> · <code>selectDayun(i)</code> · <code>selectLiunian(year)</code> · <code>selectLiuyue(i)</code> · <code>onSelect</code></p>
+    </section>
+
+    <!-- 合婚页（独立） -->
+    <section id="page-hehun" class="page hidden">
+      <div class="hehun-intro">
+        <h2>八字合婚</h2>
+        <p>双人基础参数对照（示例数据）。与排盘页相互独立，后续由 <code>gua_bazi</code> 的合婚模块提供数据。</p>
+      </div>
+      <div class="hehun-cards">
+        <div class="person-card">
+          <div class="person-head"><b>甲方</b><span>男 · 丙火</span></div>
+          <div class="person-body" id="hehun-a"></div>
+        </div>
+        <div class="person-card">
+          <div class="person-head"><b>乙方</b><span>女 · 己土</span></div>
+          <div class="person-body" id="hehun-b"></div>
+        </div>
+      </div>
+      <div class="hehun-table" id="hehun-table"></div>
+      <div class="hehun-foot">婚姻格言：以诚相待，各安其位；合婚看互补，也看彼此愿意走多远。</div>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span id="status">示例数据，非真实排盘</span>
+    <span>列先：流月 / 流年 / 大运 / 四柱；点击大运、流年、流月切换</span>
+  </footer>
+
+<script src="bazi.js"></script>
+</body>
+</html>
+

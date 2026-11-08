@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>八字盘 · 自检</title>
+<link rel="stylesheet" href="bazi.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="seal">鯨</span><div><h1>八字盘 · 自检</h1><p class="sub">selftest</p></div></div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-page="pan">排盘</button>
+    <button class="tab" data-page="hehun">合婚</button>
+  </nav>
+</header>
+<main>
+  <section id="page-pan" class="page">
+    <div class="meta-card">
+      <div class="meta-main"><div><div class="meta-name" id="meta-name"></div><div class="meta-line" id="meta-line"></div><div class="meta-line small" id="meta-line2"></div></div></div>
+    </div>
+    <div class="chart-card"><div class="chart-scroll"><div class="chart-grid" id="chart"></div></div></div>
+    <div class="selector-card"><div class="strip" id="dayun-strip"></div></div>
+    <div class="selector-card"><div class="strip" id="liunian-strip"></div></div>
+    <div class="selector-card"><div class="strip" id="liuyue-strip"></div></div>
+  </section>
+  <section id="page-hehun" class="page hidden">
+    <div class="hehun-cards"><div class="person-body" id="hehun-a"></div><div class="person-body" id="hehun-b"></div></div>
+    <div class="hehun-table" id="hehun-table"></div>
+  </section>
+</main>
+<footer class="statusbar"><span id="status"></span><span>selftest</span></footer>
+<script src="bazi.js"></script>
+<script>
+(function () {
+  function rowsOf() {
+    var cells = Array.prototype.slice.call(document.querySelectorAll('#chart .cell'));
+    var out = [];
+    for (var i = 0; i < cells.length; i += 8) out.push(cells.slice(i, i + 8).map(function (c) { return c.textContent.trim(); }));
+    return out;
+  }
+  function report() {
+    var lines = [];
+    var ctx = [];
+    function check(name, ok, extra) { lines.push((ok ? 'PASS ' : 'FAIL ') + name + (extra ? ' [' + extra + ']' : '')); }
+    var rows = rowsOf();
+    check('10 行 × 8 列', rows.length === 10 && rows.every(function (r) { return r.length === 8; }), rows.length + 'x' + (rows[0] || []).length);
+    check('表头', rows[0][0] === '日期' && rows[0][1] === '流月' && rows[0][2] === '流年' && rows[0][3] === '大运' && rows[0][4] === '年柱' && rows[0][7] === '时柱', rows[0].join(','));
+    check('主星行', rows[1].slice(1).join(',') === '正印,正官,正官,正印,伤官,元男,食神', rows[1].slice(1).join(','));
+    check('天干行', rows[2].slice(1).join('') === '戊丙丙戊壬辛癸', rows[2].slice(1).join(''));
+    check('地支行', rows[3].slice(1).join('') === '戌午寅辰戌酉巳', rows[3].slice(1).join(''));
+    check('星运行', rows[5].slice(1).join('') === '冠带病胎墓冠带临官死', rows[5].slice(1).join(''));
+    check('空亡行', rows[7].slice(1).join('|') === '辰巳|寅卯|戌亥|戌亥|子丑|子丑|午未', rows[7].slice(1).join('|'));
+    check('纳音行', rows[8].slice(1).join('|') === '平地木|天河水|炉中火|大林木|大海水|石榴木|长流水', rows[8].slice(1).join('|'));
+    check('流月默认戊戌', rows[2][1] === '戊' && rows[3][1] === '戌');
+    check('大运默认丙寅', rows[2][3] === '丙' && rows[3][3] === '寅');
+    check('流年默认丙午', rows[2][2] === '丙' && rows[3][2] === '午');
+
+    var selected = [];
+    window.BaziChart.onSelect = function (s) { selected.push(s.dayunIdx + ':' + s.liunianYear + ':' + s.liuyueIdx); };
+    window.BaziChart.selectDayun(4); // 2030 丁卯
+    check('切大运 2030', window.BaziChart.getState().dayunIdx === 4 && document.querySelector('#liunian-strip .strip-item.on').textContent.indexOf('2030') >= 0);
+    window.BaziChart.selectLiunian(2033); // 癸丑
+    check('切流年 2033', window.BaziChart.getState().liunianYear === 2033 && document.querySelector('#liunian-strip .strip-item.on').textContent.indexOf('2033') >= 0);
+    window.BaziChart.selectLiuyue(0); // 立春 甲寅
+    var lyCells = rowsOf()[2];
+    check('切流月 立春', window.BaziChart.getState().liuyueIdx === 0 && lyCells[1] === '甲');
+    check('onSelect 回调', selected.length === 3, selected.join('/'));
+
+    document.querySelector('.tab[data-page="hehun"]').click();
+    check('合婚页可切', !document.querySelector('#page-hehun').classList.contains('hidden'));
+    check('合婚表 10 行', document.querySelectorAll('#hehun-table .hh-row').length === 10);
+
+    document.querySelector('.tab[data-page="pan"]').click();
+    check('排盘页可切回', !document.querySelector('#page-pan').classList.contains('hidden'));
+
+    var box = document.createElement('div');
+    box.id = 'results';
+    box.setAttribute('style', 'position:fixed;left:6px;bottom:6px;z-index:99;background:#fff;border:1px solid #ddd;padding:4px;font-size:10px;color:#2E8B57;max-width:96vw;white-space:pre-wrap');
+    box.textContent = lines.join(' | ');
+    document.body.appendChild(box);
+    document.title = 'SELFTEST ' + (lines.every(function (l) { return l.indexOf('PASS') === 0; }) ? 'OK' : 'FAILED');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(report, 200); });
+  else setTimeout(report, 200);
+})();
+</script>
+</body>
+</html>
+
+

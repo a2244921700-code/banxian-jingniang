@@ -1,0 +1,22 @@
+# 本地用户数据：不上传
+知识库/
+资料归档/
+资料归档.rar
+卦案/
+
+# 运行期快照
+client/chart-panel/latest.json
+**/latest.json
+
+# 从商业 App 提取的布局/资源参考副本
+docs/reference/bazi-app/
+docs/reference/congzhen-qimen/
+
+# 依赖与临时文件
+node_modules/
+.pnpm-store/
+.cache/
+**/.cache/
+*.log
+Thumbs.db
+.DS_Store

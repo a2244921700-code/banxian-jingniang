@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta http-equiv="refresh" content="180"/>
+<title>紫微客户端 · 项目规划</title>
+<style>
+:root{--paper:#F6F4EE;--ink:#26241F;--ink-soft:#5B564B;--line:#D9D2C4;--accent:#5A5AB8;--accent-soft:#ECEBF7;--code:#23272E;--code-ink:#E8E2D5;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif;line-height:1.75;font-size:15px;}
+.topbar{position:sticky;top:0;z-index:9;display:flex;justify-content:space-between;align-items:center;padding:12px 28px;background:rgba(246,244,238,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
+.topbar h1{font-size:17px;margin:0;letter-spacing:.12em;color:var(--accent)}
+.topbar .meta{font-size:11.5px;color:var(--ink-soft)}
+.layout{display:flex;gap:28px;max-width:1400px;margin:0 auto;padding:26px 32px 60px;align-items:flex-start}
+main{flex:1 1 auto;min-width:0}
+aside{flex:0 0 235px;position:sticky;top:74px;font-size:12.5px;color:var(--ink-soft);border-left:1px solid var(--line);padding-left:18px;max-height:calc(100vh - 110px);overflow:auto}
+aside b{display:block;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;font-size:11.5px}
+aside a{display:block;color:var(--ink-soft);text-decoration:none;padding:2px 0;border-bottom:1px dashed transparent}
+aside a:hover{color:var(--accent);border-bottom-color:var(--line)}
+h1{font-size:23px;margin:8px 0 4px;letter-spacing:.06em}
+h2{font-size:18px;margin:30px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--line);color:var(--accent);scroll-margin-top:70px}
+h3{font-size:15px;margin:18px 0 6px}
+p{margin:8px 0}
+ul,ol{margin:6px 0 10px;padding-left:22px}
+li{margin:3px 0}
+strong{color:#1c1b17}
+code{font-family:ui-monospace,Consolas,"Cascadia Mono",monospace;font-size:12.5px;background:var(--accent-soft);color:#3B3B7A;padding:1px 4px;border-radius:3px}
+pre{background:var(--code);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.5}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:#EFEBE1;color:#4A4438;font-weight:600;white-space:nowrap}
+tr:nth-child(even) td{background:rgba(255,255,255,.45)}
+blockquote{margin:12px 0;padding:8px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);color:var(--ink-soft)}
+hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+.foot{max-width:1400px;margin:0 auto;padding:0 32px 30px;font-size:11.5px;color:var(--ink-soft)}
+.badge{display:inline-block;border:1px solid var(--accent);color:var(--accent);border-radius:4px;padding:0 6px;font-size:11px;margin-left:6px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>紫微斗数可视化客户端 · 项目规划 <span class="badge">v0.1</span></h1>
+  <div class="meta">打开于 2026-11-07 01:41 ｜ 内容以 docs/PLAN-ZIWEI-CLIENT.md 为准</div>
+</div>
+<div class="layout">
+<main>
+<p>﻿# 紫微斗数可视化客户端 · 项目规划（v0.1）</p>
+<ul>
+<li>更新：2026-11-07 01:00</li>
+<li>目标一句话：把「半仙·鲸娘」从纯对话 Agent，升级为 <strong>AI 可操作、人看得到</strong> 的桌面客户端——中间/主区是紫微命盘，旁边是 Agent 对话与断语；Agent 通过工具输出结构化盘面，前端负责渲染与交互。</li>
+<li>本文是长期记忆锚点：路径、决定、进度、数据契约都记在这里；每完成一步回来勾状态。</li>
+</ul>
+<hr />
+<h2 id="sec0">0. 当前进度（2026-11-07）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JDK 21 + FFDec 26.4.0 环境</td>
+<td>✅ 完成</td>
+</tr>
+<tr>
+<td>base.apk（文墨天机 2.5.26）解包 + App.swf 反编译</td>
+<td>✅ 980 个 AS3 文件、10.2 MB</td>
+</tr>
+<tr>
+<td>从反编译代码提取盘面结构/配色/组件线索</td>
+<td>✅ 有了初步结论（见 §2）</td>
+</tr>
+<tr>
+<td>前端原型骨架（index.html + chart.css）</td>
+<td>✅ 已建</td>
+</tr>
+<tr>
+<td>A2 渲染层 <code>chart.js</code> + 示例盘</td>
+<td>✅ 完成（12 宫渲染、四化/庙旺/神煞、中宫信息）</td>
+</tr>
+<tr>
+<td>A3 交互（详情栏/切换神煞四化/主题/示例盘）</td>
+<td>✅ 完成</td>
+</tr>
+<tr>
+<td>A4 AI 操作 API（render/getData/setTheme/toggle/focus/onSelect）</td>
+<td>✅ 完成</td>
+</tr>
+<tr>
+<td>A5 验收（截图 + 自检 + README）</td>
+<td>✅ 完成：<code>preview.png</code>、<code>selftest.html</code>（9 项 PASS）、<code>README.md</code></td>
+</tr>
+<tr>
+<td>A6 打磨（字号密度/PNG 导出；移动端不做）</td>
+<td>⬜ 可选</td>
+</tr>
+<tr>
+<td>紫微引擎 <code>engine/ziwei.js</code> + 工具 <code>gua_ziwei</code></td>
+<td>✅ 完成：<code>ziwei.js</code>/<code>ziwei-data.js</code>/<code>tools-ziwei.js</code>；5 项引擎测试，60 例 py-iztro 对照零差异</td>
+</tr>
+<tr>
+<td>格局数据集入库、<code>guashi-ziwei</code> 技能、人设升级</td>
+<td>✅ 格局大全 + 技能完成；人设升级暂停（待作者其他前提内容）</td>
+</tr>
+<tr>
+<td>客户端与 DSH 集成</td>
+<td>🟡 已实现右侧栏插件 <code>guashi-chart-panel</code>（八字/紫微自动打开），待重启验收</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sec1">1. 为什么做、做成什么样</h2>
+<ul>
+<li>现状：卦师 Agent 只能输出文字；紫微斗数排盘没有引擎也没有可视化。</li>
+<li>目标形态：</li>
+<li><strong>看得见</strong>：12 宫命盘、主星/辅星/四化/庙旺/大限流年/神煞，一屏读完。</li>
+<li><strong>AI 可操作</strong>：盘面由工具输出的 JSON 驱动，Agent 能刷新盘、切主题、聚焦某宫、下断语；人也能点选宫位看细节。</li>
+<li><strong>持续可用</strong>：先独立静态页面（零依赖、双击可开），后续再考虑嵌进 DSH Web 侧栏或做成独立客户端。</li>
+<li>视觉基调：浅灰纸面（参考文墨天机的 <code>#CECECE</code> 底 + 白格 + <code>#6666CC</code> 蓝紫强调），另备「墨色」主题给鲸娘气质。</li>
+</ul>
+<hr />
+<h2 id="sec2">2. 从「文墨天机」反编译得到的盘面认知</h2>
+<p>App：<code>com.ziwei001.zwmobilepro</code>（文墨天机 专业版 2.5.26），Adobe AIR 应用，界面在 <code>App.swf</code>（13 MB），Haxe/OpenFL 编写，类名混淆为 <code>WenMoTianJiK*</code>。</p>
+<table>
+<thead>
+<tr>
+<th>发现</th>
+<th>内容</th>
+<th>对我们的用处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>盘面布局</td>
+<td>12 宫环形：<code>巳午未申 / 辰□ □酉 / 卯□ □戌 / 寅丑子亥</code>，中间 2×2 为中宫信息</td>
+<td>直接作为原型网格</td>
+</tr>
+<tr>
+<td>每宫内容</td>
+<td>宫名 + 地支、大限/流年标记、主星+庙旺、辅星、四化（禄权科忌）、神煞</td>
+<td>设计每格内容槽位</td>
+</tr>
+<tr>
+<td>配色</td>
+<td>底 <code>#CECECE</code>、格 <code>#FFFFFF</code>、线 <code>#B2B2B2</code>、强调 <code>#6666CC</code>、弹窗渐变灰</td>
+<td>浅色主题色板</td>
+</tr>
+<tr>
+<td>UI 框架</td>
+<td><code>WenMoTianJiK9442K</code>（UI/UIButton/UILabel/UIWindow/UITabPages/UIList…）</td>
+<td>组件命名参考</td>
+</tr>
+<tr>
+<td>命盘绘制</td>
+<td><code>WenMoTianJiK93C9K</code>（<code>K9367K</code> 等）：TextField + BitmapData 逐格绘制</td>
+<td>印证「宫格 + 文字」方案</td>
+</tr>
+<tr>
+<td>星曜算法</td>
+<td><code>WenMoTianJiK9373K</code>：<code>getStar/getYunStar/getLiuStar</code> 等取星函数与星表</td>
+<td>阶段 B 对照安星法</td>
+</tr>
+<tr>
+<td>格局数据</td>
+<td><code>WenMoTianJiK9329K</code>：明文格局条目（吉/凶格、诗曰、命例）4.1 万字符</td>
+<td>阶段 C 整理入库</td>
+</tr>
+<tr>
+<td>限制</td>
+<td>界面中文在加密字符串池 <code>StrPoolData.bin</code>（175,941 B），未解出明文</td>
+<td>原型标签用通行叫法，不依赖它</td>
+</tr>
+</tbody>
+</table>
+<p>反编译产物路径（记忆锚点）：
+- APK：<code>C:\Users\22449\Downloads\base.apk</code>
+- 解包：<code>D:\DSH\reverse\wmtj\apk</code>
+- 反编译脚本：<code>D:\DSH\reverse\wmtj\scripts\scripts</code>（980 个 .as）
+- 资源导出：<code>D:\DSH\reverse\wmtj\assets_out</code>
+- 工具：<code>D:\DSH\reverse\tools\ffdec</code></p>
+<hr />
+<h2 id="sec3">3. 阶段规划</h2>
+<h3>A. 前端原型（当前阶段）</h3>
+<p>目标：<strong>一屏正确的 12 宫命盘</strong>，数据驱动、可交互、可截图；为后面接引擎打好壳。</p>
+<ul>
+<li>A1 盘面网格与样式（已完成骨架）：4×4 CSS Grid，中宫 2×2，浅色主题 + 墨色主题。</li>
+<li>A2 渲染层 <code>chart.js</code>：按数据契约渲染 12 宫、中宫信息、图例。</li>
+<li>A3 交互：点击宫位 → 右侧详情栏（宫位/星曜/大限/流年/神煞）；按钮切换神煞、四化、主题、示例盘。</li>
+<li>A4 AI 操作接口：<code>window.ZiweiChart.render(data)</code>、<code>setTheme</code>、<code>toggle</code>、<code>getData</code>、<code>onSelect</code>；支持被外部脚本/后端调用。</li>
+<li>A5 验收：示例盘 + 截图 + README（怎么开、怎么改数据、怎么接引擎）。</li>
+<li>A6 打磨：移动端自适应、导出 PNG（后续）、盘面字号/密度可调。</li>
+</ul>
+<p><strong>A 阶段验收标准</strong>
+1. 12 宫地支位置正确（见 §4 环序），宫名按命宫顺排；
+2. 每宫主星/辅星/四化/庙旺/神煞显示正确，四化四色可辨；
+3. 中宫：姓名、性别、公历、农历、四柱、五行局、命主/身主、命/身宫、大限、流年；
+4. 点任意宫位出详情；切换主题/神煞/四化即时生效；
+5. 零外部依赖，双击 <code>index.html</code> 可开；窄屏可用。</p>
+<h3>B. 紫微引擎 <code>engine/ziwei.js</code> + 工具 <code>gua_ziwei</code></h3>
+<ul>
+<li>输入：公历/农历生日、时辰、性别、地点（真太阳时）。</li>
+<li>输出：与前端契约一致的盘面 JSON（12 宫、星曜、四化、大限、流年、宫位）。</li>
+<li>内容：五行局、安紫微/天府系、十四主星、辅星（昌曲魁钺禄存羊陀火铃空劫）、四化、十二宫、大限/流年斗君、三方四正。</li>
+<li>对照：《紫微斗数全书》（已有 KB）+ 文墨天机 <code>K9373K</code> 星表思路 + 通行安星法。</li>
+<li>测试：2–3 个公开盘例（与通行排盘软件对照），再进 <code>tools.test.mjs</code>。</li>
+</ul>
+<h3>C. 内容与断法（半仙·鲸娘）</h3>
+<ul>
+<li>把 <code>K9329K</code> 格局数据整理为「紫微格局大全（据文墨天机数据集整理，仅个人研习）」入 <code>知识库\12-紫微斗数</code>；</li>
+<li>新技能 <code>guashi-ziwei</code>：安星速查 + 断法（命身三方四正、四化、大限流年、格局）；</li>
+<li>人设升级：鲸娘 → 半仙·鲸娘（易占六门 + 三命），输出规范加「先定盘后论断、不宿命不吓人」；</li>
+<li>KB 12/13 补 <code>_目录.md</code> 与使用说明。</li>
+</ul>
+<h3>D. 客户端集成（待定）</h3>
+<p>三选一（到时拍板）：
+1. 独立静态页 + 本地小服务（Agent 推送 JSON，最简单）；
+2. 嵌进 DSH Web 右侧栏（需要写 client plugin，费劲但「就是侧栏」）；
+3. 独立桌面窗口（Electron/Tauri 起壳，长期形态）。</p>
+<hr />
+<h2 id="sec4">4. 盘面布局与数据契约（冻结，改动需记到本文件）</h2>
+<h3>4.1 12 宫位置（CSS Grid 4×4）</h3>
+<pre><code>巳(0,0) 午(0,1) 未(0,2) 申(0,3)
+辰(1,0) [ 中 宫 2×2 ] 酉(1,3)
+卯(2,0) [ 中 宫 2×2 ] 戌(2,3)
+寅(3,0) 丑(3,1) 子(3,2) 亥(3,3)
+</code></pre>
+<ul>
+<li>环序（顺次）：<code>寅 丑 子 亥 戌 酉 申 未 午 巳 辰 卯</code>（沿四边逆时针一圈）。</li>
+<li>宫名排法：命宫在哪一格，就从那格起，按环序顺次排 <code>命宫、兄弟、夫妻、子女、财帛、疾厄、迁移、交友、官禄、田宅、福德、父母</code>。</li>
+<li>身宫：落于身宫地支所在格，角标「身」。</li>
+</ul>
+<h3>4.2 数据契约（前端 ⇄ 引擎）</h3>
+<pre><code class="language-json">{
+  &quot;meta&quot;: {
+    &quot;name&quot;: &quot;示例盘&quot;,
+    &quot;gender&quot;: &quot;男&quot;,
+    &quot;birthSolar&quot;: &quot;1990-05-15 14:30&quot;,
+    &quot;birthLunar&quot;: &quot;庚午年 四月 廿一 未时&quot;,
+    &quot;fourPillars&quot;: &quot;庚午 辛巳 乙酉 癸未&quot;,
+    &quot;wuxingJu&quot;: &quot;火六局&quot;,
+    &quot;mingZhu&quot;: &quot;贪狼&quot;,
+    &quot;shenZhu&quot;: &quot;天相&quot;,
+    &quot;shenGongZhi&quot;: &quot;未&quot;,
+    &quot;daxian&quot;: &quot;6-15岁 丙戌&quot;,
+    &quot;liunian&quot;: &quot;2026 丙午&quot;
+  },
+  &quot;palaces&quot;: [
+    {
+      &quot;zhi&quot;: &quot;午&quot;,
+      &quot;name&quot;: &quot;命宫&quot;,
+      &quot;isMing&quot;: true,
+      &quot;isShen&quot;: false,
+      &quot;daxian&quot;: &quot;6-15&quot;,
+      &quot;liunian&quot;: &quot;2026 命宫&quot;,
+      &quot;stars&quot;: [{ &quot;name&quot;: &quot;紫微&quot;, &quot;bright&quot;: &quot;庙&quot;, &quot;sihua&quot;: &quot;权&quot; }],
+      &quot;aux&quot;: [{ &quot;name&quot;: &quot;文昌&quot;, &quot;sihua&quot;: &quot;科&quot; }],
+      &quot;sha&quot;: [&quot;擎羊&quot;, &quot;天刑&quot;]
+    }
+  ]
+}
+</code></pre>
+<ul>
+<li><code>palaces</code> 长度 12，按 <code>zhi</code> 匹配位置（不依赖数组顺序）。</li>
+<li><code>bright</code> ∈ 庙/旺/得/利/平/陷；缺省不显示。</li>
+<li><code>sihua</code> ∈ 禄/权/科/忌。</li>
+<li><code>sha</code> 为神煞名数组，不显示时可空。</li>
+<li>中宫由 <code>meta</code> 渲染；后续可加 <code>extra</code>（如自化、三方四正标记）。</li>
+</ul>
+<h3>4.3 前端对外 API</h3>
+<pre><code class="language-js">ZiweiChart.render(data)        // 重绘整盘
+ZiweiChart.getData()           // 取当前数据
+ZiweiChart.setTheme('light'|'dark')
+ZiweiChart.toggle('sha'|'sihua', true|false)
+ZiweiChart.focus(zhi)          // 选中某宫并展开详情
+ZiweiChart.onSelect = (palace) =&gt; {}   // 点宫回调
+</code></pre>
+<hr />
+<h2 id="sec5">5. 任务看板</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>任务</th>
+<th>状态</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>盘面网格与样式</td>
+<td>✅</td>
+<td><code>client/ziwei-chart/index.html</code>、<code>chart.css</code></td>
+</tr>
+<tr>
+<td>A2</td>
+<td>chart.js 渲染 + 示例数据</td>
+<td>✅</td>
+<td><code>chart.js</code>（12 宫/中宫/四化/庙旺/神煞）</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>详情栏与交互</td>
+<td>✅</td>
+<td>同上：点宫详情、切换、主题、示例盘</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>AI 操作 API</td>
+<td>✅</td>
+<td><code>ZiweiChart.render/getData/setTheme/toggle/focus/onSelect</code></td>
+</tr>
+<tr>
+<td>A5</td>
+<td>截图验收 + README</td>
+<td>✅</td>
+<td><code>preview.png</code>、<code>selftest.html</code>（9 项 PASS）、<code>README.md</code></td>
+</tr>
+<tr>
+<td>A6</td>
+<td>字号密度/PNG 导出（移动端不做）</td>
+<td>⬜ 可选</td>
+<td>样式补丁</td>
+</tr>
+<tr>
+<td>B1</td>
+<td>安星基础（五行局/紫微/天府系）</td>
+<td>✅</td>
+<td><code>lib/engine/ziwei.js</code>、<code>ziwei-data.js</code></td>
+</tr>
+<tr>
+<td>B2</td>
+<td>十四主星 + 辅星 + 四化</td>
+<td>✅</td>
+<td>同上（主星亮度/四化、昌曲魁钺左右禄存羊陀火铃空劫、天马、红鸾天喜、神煞）</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>十二宫/大限/流年/三方四正</td>
+<td>✅ 十二宫/大限/流年命宫；三方四正待 C/D</td>
+<td></td>
+</tr>
+<tr>
+<td>B4</td>
+<td>工具 <code>gua_ziwei</code> + 测试</td>
+<td>✅</td>
+<td><code>lib/tools-ziwei.js</code>、<code>test/engine-ziwei.test.mjs</code>（5 项）、tools 测试 14 项</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>格局数据整理入 KB</td>
+<td>✅</td>
+<td><code>知识库/12-紫微斗数/紫微格局大全.md</code>（约 0.6 万字符，富/贵/正格/贫贱/杂局 + 两诀 + 十等论）</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><code>guashi-ziwei</code> 技能</td>
+<td>✅</td>
+<td><code>skills/guashi-ziwei/SKILL.md</code>（读盘六看/十二宫/十四主星/四化/大限流年/输出规范）</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>人设升级「半仙·鲸娘」</td>
+<td>✅ 完成（易占六门 + 命理三科；工具 11 个、技能 17 篇）</td>
+<td>preset 文案、README</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sec6">6. 决定与待定</h2>
+<p><strong>已定</strong>
+- 前端先做零依赖静态页（HTML/CSS/JS），DOM 渲染，不引入框架；
+- 浅色纸面为主、墨色可选，贴近文墨天机盘面观感；
+- 数据契约先行，前端不写死任何盘面数据；
+- 反编译只作个人研习参考，不复制其代码/素材分发。</p>
+<p><strong>待定</strong>
+1. 客户端形态：独立页 + 本地服务 / DSH 侧栏插件 / 桌面壳（阶段 D 再定）；
+2. 是否在盘面上叠「三方四正连线」与「自化/飞星」标记；
+3. 盘面字号密度（紧凑版给手机，宽松版给桌面）；
+4. 是否提供 PNG/PDF 导出；
+5. 字符串池加密是否继续攻（当前不影响 A/B，只影响 C 阶段文字标签参考）。</p>
+<hr />
+<h2 id="sec7">7. 记忆锚点速查</h2>
+<ul>
+<li>原型目录：<code>D:\DSH_GuaShi\client\ziwei-chart\</code></li>
+<li>计划文档：<code>D:\DSH_GuaShi\docs\PLAN-ZIWEI-CLIENT.md</code>（本文件）</li>
+<li>规划看板页：<code>D:\DSH_GuaShi\docs\plan-viewer.html</code>（由 <code>tools\build_plan_viewer.py</code> 生成，每 180 秒自动刷新；改了本文件后重跑脚本）</li>
+<li>紫微知识库：<code>D:\DSH_GuaShi\知识库\12-紫微斗数\</code>（紫微斗数全书 + 赋文 + _目录.md）</li>
+<li>相关旧计划：<code>docs\PLAN-BANXIAN.md</code>（半仙·鲸娘总升级计划）</li>
+<li>反编译参考：<code>D:\DSH\reverse\wmtj\</code>（App.swf 脚本 980 个，K9373K 星表、K93C9K 绘制、K9329K 格局）</li>
+</ul>
+</main>
+<aside>
+  <b>快速导航</b>
+  <a href="#sec0">0 当前进度</a>
+  <a href="#sec1">1 为什么做</a>
+  <a href="#sec2">2 从文墨天机学到</a>
+  <a href="#sec3">3 阶段规划</a>
+  <a href="#sec4">4 盘面布局与数据契约</a>
+  <a href="#sec5">5 任务看板</a>
+  <a href="#sec6">6 决定与待定</a>
+  <a href="#sec7">7 记忆锚点速查</a>
+</aside>
+</div>
+<div class="foot">本页由 tools/build_plan_viewer.py 生成（静态内嵌，每 180 秒自动刷新）。源文件：D:\DSH_GuaShi\docs\PLAN-ZIWEI-CLIENT.md</div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>奇门九宫盘 · 自检</title>
+<script>window.__errors = []; window.addEventListener('error', function (e) { window.__errors.push(String(e.message || e)); });</script>
+<link rel="stylesheet" href="qimen.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="seal">門</span><div><h1>奇门九宫盘 · 自检</h1><p class="sub">selftest v0.2</p></div></div>
+  <nav class="tabs" data-tabs id="scene-tabs"></nav>
+  <div class="top-actions"><span class="pill" id="pill-mode">—</span><span class="pill pill-soft">selftest</span></div>
+</header>
+<main>
+  <section class="settings-card">
+    <div class="settings-head"><span class="settings-title">排盘设置</span><span class="settings-flags" id="settings-flags"></span><button type="button" id="btn-reset-settings">重置本局设置</button></div>
+    <div class="settings-grid" id="settings-grid"></div>
+    <div class="settings-foot" id="settings-foot"></div>
+  </section>
+  <section class="banner" id="banner" hidden></section>
+  <section class="meta-card">
+    <div class="meta-row"><div class="meta-date" id="meta-date"></div><div class="meta-term" id="meta-term"></div></div>
+    <div class="pillars" id="pillars"></div>
+    <div class="ju-line" id="ju-line"></div>
+    <div class="chips" id="chips"></div>
+  </section>
+  <section class="mingyun-card" id="mingyun-card" hidden>
+    <div class="mingyun-head"><span>命运局</span><span class="mingyun-note" id="mingyun-note"></span></div>
+    <div class="mingyun-strip" id="mingyun-strip"></div>
+  </section>
+  <section class="chart-card">
+    <div class="chart-head"><span>九宫盘面</span><span class="hint" id="chart-hint"></span></div>
+    <div class="qimen-grid" id="qimen-grid"></div>
+    <div class="chart-placeholder" id="chart-placeholder" hidden></div>
+  </section>
+  <section class="detail-card" id="detail-card"></section>
+  <section class="bottom-card">
+    <div class="bottom-meta" id="bottom-meta"></div>
+    <div class="controls">
+      <label><input type="checkbox" id="opt-angan" checked /> 显示暗干</label>
+      <label><input type="checkbox" id="opt-wangshuai" checked /> 显示旺衰</label>
+      <label><input type="checkbox" id="opt-chuanren" checked /> 显示穿壬</label>
+      <label><input type="checkbox" id="opt-notes" checked /> 显示备注</label>
+      <button type="button" id="btn-reset">重置选择</button>
+    </div>
+  </section>
+</main>
+<div id="results" style="position:fixed;left:6px;bottom:6px;z-index:99;background:#fff;border:1px solid #ddd;padding:4px;font-size:10px;color:#2E8B57;max-width:96vw;white-space:pre-wrap"></div>
+<script src="sample-data.js"></script>
+<script src="qimen.js"></script>
+<script>
+(function () {
+  function results() {
+    var lines = [];
+    var Q = window.QimenChart;
+    var WS = window.QIMEN_WORKSPACE || null;
+    var CAT = WS ? WS.catalog : null;
+    var META = WS ? WS.meta : null;
+    function check(name, ok, extra) {
+      lines.push((ok ? 'PASS ' : 'FAIL ') + name + (extra != null && extra !== '' ? ' [' + extra + ']' : ''));
+    }
+    function q(sel) { return document.querySelector(sel); }
+    function cards() { return document.querySelectorAll('#qimen-grid .palace'); }
+    function catalog(dim, id) {
+      if (!CAT) return null;
+      var list = CAT[dim] || [];
+      for (var i = 0; i < list.length; i += 1) if (String(list[i].id) === String(id)) return list[i];
+      return null;
+    }
+    function setSelect(key, value) {
+      var sel = q('select[data-setting="' + key + '"]');
+      if (!sel) return false;
+      sel.value = String(value);
+      sel.dispatchEvent(new Event('change'));
+      return true;
+    }
+
+    /* ---------- A. 基础盘面（兼容旧 11 项中的核心项） ---------- */
+    check('工作区数据存在', Boolean(WS && WS.tabs && WS.tabs.length), WS ? 'tabs=' + WS.tabs.length : '无');
+    check('九宫卡片', cards().length === 9, String(cards().length));
+    check('宫序', Array.prototype.map.call(cards(), function (c) { return c.getAttribute('data-index'); }).join(',') === '4,9,2,3,5,7,8,1,6');
+    check('四柱', document.querySelectorAll('#pillars .pillar').length === 4);
+    check('局信息', q('#ju-line').textContent.indexOf('阴遁2局') >= 0, q('#ju-line').textContent.slice(0, 60));
+    check('值符值使', q('#ju-line').textContent.indexOf('天柱') >= 0 && q('#ju-line').textContent.indexOf('惊门') >= 0);
+    check('九宫有八神', q('#qimen-grid .palace:not(.center) .shen').textContent.length > 0);
+    check('数据元信息', Boolean(META && META.counts && META.counts.charts > 0), META ? '盘=' + META.counts.charts : '—');
+    check('无 JS 错误', window.__errors.length === 0, window.__errors.join(' / '));
+
+    /* ---------- B. 暗干 ---------- */
+    check('暗干显示', document.querySelectorAll('.angan').length > 0, String(document.querySelectorAll('.angan').length));
+    var anganBefore = document.querySelectorAll('.angan').length;
+    q('#opt-angan').click();
+    var anganAfter = document.querySelectorAll('.angan').length;
+    q('#opt-angan').click();
+    check('暗干可隐藏/恢复', anganBefore > 0 && anganAfter === 0 && document.querySelectorAll('.angan').length > 0);
+
+    /* ---------- C. 穿壬 ---------- */
+    var st0 = Q.getState();
+    check('每宫有穿壬块', document.querySelectorAll('#qimen-grid .cr').length === 9, String(document.querySelectorAll('#qimen-grid .cr').length));
+    if (st0.chuanRen) {
+      var crItems = document.querySelectorAll('#qimen-grid .cr-item').length;
+      var crText = q('#qimen-grid .cr').textContent;
+      check('穿壬四层渲染', crItems > 0 && crText.indexOf('月将') >= 0 && crText.indexOf('神将') >= 0 && crText.indexOf('建星') >= 0, 'items=' + crItems);
+      check('穿壬头部信息', q('#chips').textContent.indexOf('穿壬：月将') >= 0, q('#chips').textContent.slice(0, 90));
+    } else {
+      var missing = document.querySelectorAll('#qimen-grid .cr.missing').length;
+      check('穿壬缺失显示—', missing === 9 && q('#qimen-grid .cr').textContent.indexOf('—') >= 0, 'missing=' + missing);
+      check('穿壬头部提示', q('#chips').textContent.indexOf('引擎未提供') >= 0);
+    }
+    var crBefore = document.querySelectorAll('#qimen-grid .cr').length;
+    q('#opt-chuanren').click();
+    var crAfter = document.querySelectorAll('#qimen-grid .cr').length;
+    q('#opt-chuanren').click();
+    check('穿壬可隐藏/恢复', crBefore === 9 && crAfter === 0 && document.querySelectorAll('#qimen-grid .cr').length === 9);
+
+    /* ---------- D. 点宫联动 ---------- */
+    var selected = null;
+    Q.onSelect = function (p) { selected = p; };
+    q('#qimen-grid .palace[data-index="1"]').click();
+    check('点宫 onSelect', selected && selected.index === 1);
+    check('详情联动', q('#detail-card .detail-title').textContent.indexOf('一宫') >= 0, q('#detail-card .detail-title').textContent);
+    check('详情有穿壬行', q('#detail-card').textContent.indexOf('穿壬') >= 0);
+    Q.onSelect = null;
+
+    /* ---------- E. 设置面板 ---------- */
+    var selects = document.querySelectorAll('#settings-grid select');
+    check('设置面板 6 项', selects.length === 6, String(selects.length));
+    var juSel = q('select[data-setting="juMode"]');
+    var juTexts = juSel ? Array.prototype.map.call(juSel.options, function (o) { return o.textContent; }) : [];
+    check('起局方式 13 项', juTexts.length === 13, String(juTexts.length));
+    check('未实现/实验项有标签', juTexts.some(function (t) { return t.indexOf('实验/待校核') >= 0; }) &&
+      juTexts.some(function (t) { return t.indexOf('年家奇门') >= 0 && t.indexOf('实验/待校核') >= 0; }), juTexts.filter(function (t) { return t.indexOf('实验') >= 0; }).slice(0, 2).join(' '));
+    check('置闰天数选项', (q('select[data-setting="zhirunDays"]') || { options: [] }).options.length === 2);
+    check('暗干排法 5 项', (q('select[data-setting="anGanMode"]') || { options: [] }).options.length === 5);
+
+    var ji = catalog('jiGongs', '阳艮阴坤');
+    var switched = setSelect('jiGong', '阳艮阴坤');
+    var afterJi = Q.getState();
+    check('切换寄宫生效', switched && afterJi.settings.jiGong === '阳艮阴坤' &&
+      (q('#chips').textContent.indexOf('阳艮阴坤') >= 0 || q('#ju-line').textContent.indexOf('阳艮阴坤') >= 0 || cards().length === 0),
+      'supported=' + (ji ? ji.supported : '?') + ' cards=' + cards().length);
+    setSelect('jiGong', '坤二');
+
+    var zr = catalog('juModes', '时家置闰');
+    setSelect('juMode', '时家置闰');
+    var afterZr = Q.getState();
+    var zrOk = afterZr.settings.juMode === '时家置闰';
+    if (zr && zr.supported) zrOk = zrOk && q('#ju-line').textContent.indexOf('置闰') >= 0 && cards().length === 9;
+    check('切换置闰生效', zrOk, q('#ju-line').textContent.slice(0, 70));
+    setSelect('juMode', '时家拆补');
+
+    /* 盘式：支持的按真实盘渲染；未实现的必须显示占位、不拿转盘冒充 */
+    var fly = catalog('panModes', '飞盘');
+    setSelect('panMode', '飞盘');
+    var stFly = Q.getState();
+    if (fly && fly.supported) {
+      check('飞盘（引擎支持）渲染', cards().length === 9, 'cards=' + cards().length + ' experimental=' + (fly.experimental ? 'yes' : 'no'));
+      check('飞盘实验标签', fly.experimental ? (q('#banner').hidden ? 'FAIL' : true) : true,
+        q('#banner').hidden ? 'banner hidden' : q('#banner').textContent.slice(0, 50));
+    } else {
+      check('未实现盘式显示占位', q('#qimen-grid').hidden === true && q('#chart-placeholder').hidden === false && cards().length === 0);
+      check('未实现盘式不伪造', q('#banner').hidden === false && q('#banner').textContent.indexOf('未实现') >= 0,
+        q('#banner').textContent.slice(0, 70));
+      check('未实现盘式详情显示—', q('#detail-card').textContent.indexOf('—') >= 0);
+    }
+    setSelect('panMode', '转盘');
+    check('切回转盘恢复盘面', cards().length === 9 && q('#qimen-grid').hidden === false);
+
+    q('#btn-reset-settings').click();
+    var afterReset = Q.getState();
+    check('重置设置', afterReset.settings.juMode === '时家拆补' && afterReset.settings.panMode === '转盘' &&
+      afterReset.settings.jiGong === '坤二' && cards().length === 9);
+
+    /* ---------- F. 多局标签 ---------- */
+    check('多局标签 4 个', document.querySelectorAll('#scene-tabs .tab').length === 4, String(document.querySelectorAll('#scene-tabs .tab').length));
+    var date1 = q('#meta-date').textContent;
+    Q.selectTab('scene-2');
+    var date2 = q('#meta-date').textContent;
+    check('切局式2', Q.getState().activeTabId === 'scene-2' && date1 !== date2 && cards().length === 9, date2);
+    var onTab = q('#scene-tabs .tab.on');
+    check('标签高亮同步', onTab && onTab.getAttribute('data-tab') === 'scene-2');
+    Q.selectTab('scene-1');
+    check('切回局式1', Q.getState().activeTabId === 'scene-1' && q('#meta-date').textContent === date1);
+
+    /* 命运局：有数据则显示大运条并可切换；无数据必须明示未提供 */
+    var my = WS ? WS.mingyun : null;
+    Q.selectTab('mingyun');
+    var myState = Q.getState();
+    if (my && my.supported) {
+      var stepCount = document.querySelectorAll('#mingyun-strip .step').length;
+      check('命运局大运条', !q('#mingyun-card').hidden && stepCount > 1, 'steps=' + stepCount);
+      var beforeStep = JSON.stringify((Q.getData() || {}).palaces || null);
+      if (stepCount > 1) {
+        document.querySelectorAll('#mingyun-strip .step')[1].click();
+        var afterStep = JSON.stringify((Q.getData() || {}).palaces || null);
+        check('切大运步生效', beforeStep !== afterStep && Q.getState().mingyunStep === 1);
+      } else {
+        check('切大运步生效', false, 'step 不足');
+      }
+    } else {
+      check('命运局未提供明示', myState.activeTabId === 'mingyun' && q('#banner').hidden === false &&
+        q('#banner').textContent.indexOf('命运局') >= 0 && q('#chart-placeholder').hidden === false,
+        q('#banner').textContent.slice(0, 70));
+      check('命运局不伪造盘面', cards().length === 0);
+    }
+    Q.selectTab('scene-1');
+    check('回局式1恢复盘面', cards().length === 9);
+
+    /* ---------- G. 未生成组合 / 多局起局方式 ---------- */
+    var yearJia = catalog('juModes', '年家奇门');
+    setSelect('juMode', '年家奇门');
+    var stYear = Q.getState();
+    if (yearJia && yearJia.supported) {
+      check('多局起局方式（年家）可切换', stYear.settings.juMode === '年家奇门' && cards().length === 9 && q('#ju-line').textContent.indexOf('年家') >= 0,
+        q('#ju-line').textContent.slice(0, 60));
+      check('多局实验标签', q('#banner').hidden === false && q('#banner').textContent.indexOf('实验') >= 0,
+        q('#banner').textContent.slice(0, 60));
+    } else {
+      check('多局起局方式（年家）明示未实现', q('#chart-placeholder').hidden === false || q('#banner').textContent.indexOf('未实现') >= 0);
+    }
+    setSelect('juMode', '时家拆补');
+
+    // 多局附加信息（引擎有 meta.extras 时显示）
+    if (catalog('juModes', '山向奇门') && catalog('juModes', '山向奇门').supported) {
+      setSelect('juMode', '山向奇门');
+      check('山向信息显示', q('#chips').textContent.indexOf('山向') >= 0, q('#chips').textContent.slice(-80));
+      setSelect('juMode', '时家拆补');
+    }
+    if (catalog('juModes', '奇门套玄空') && catalog('juModes', '奇门套玄空').supported) {
+      setSelect('juMode', '奇门套玄空');
+      check('套玄空信息显示', q('#chips').textContent.indexOf('套玄空') >= 0 || q('#chips').textContent.indexOf('九运') >= 0, q('#chips').textContent.slice(-80));
+      setSelect('juMode', '时家拆补');
+    }
+
+    // 局式2 只生成基础变体：切到未生成的多局组合必须占位、不冒充
+    Q.selectTab('scene-2');
+    Q.setSettings({ juMode: '年家奇门' });
+    check('未生成组合显示占位', q('#qimen-grid').hidden === true && q('#chart-placeholder').hidden === false && cards().length === 0);
+    check('未生成组合有提示', q('#banner').hidden === false && q('#banner').textContent.indexOf('年家') >= 0,
+      q('#banner').textContent.slice(0, 70));
+    Q.setSettings({ juMode: '时家拆补' });
+    check('局式2 恢复基础盘', cards().length === 9);
+    Q.selectTab('scene-1');
+    check('回局式1（测试后）', cards().length === 9 && Q.getState().activeTabId === 'scene-1');
+
+    /* ---------- H. 旺衰 / 备注 / API ---------- */
+    Q.setOption('wangShuai', false);
+    check('旺衰可隐藏', document.querySelectorAll('.ws').length === 0);
+    Q.setOption('wangShuai', true);
+    check('旺衰恢复', document.querySelectorAll('.ws').length > 0);
+    var cur = Q.getData();
+    check('getData 返回盘面', Boolean(cur && cur.palaces && cur.palaces.length === 9));
+    var st = Q.getState();
+    check('getState 结构', st && st.tab && st.options && typeof st.experimental === 'boolean' && st.selected === 5);
+    check('getWorkspace', Boolean(Q.getWorkspace() && Q.getWorkspace().tabs.length === (WS ? WS.tabs.length : 0)));
+
+    /* ---------- I. 旧 API / 单盘兼容 ---------- */
+    if (window.QIMEN_SAMPLE) {
+      Q.render(window.QIMEN_SAMPLE);
+      check('render(单盘)旧 API 兼容', cards().length === 9 && Q.getWorkspace().single === true &&
+        q('#settings-grid').textContent.indexOf('单盘数据') >= 0, cards().length + ' cards');
+      Q.render(window.QIMEN_WORKSPACE);
+      check('恢复多局工作区', Q.getWorkspace().tabs.length === 4 && cards().length === 9);
+    } else {
+      check('render(单盘)旧 API 兼容', false, '无 QIMEN_SAMPLE');
+    }
+
+    var allPass = lines.every(function (l) { return l.indexOf('PASS') === 0; });
+    var box = document.getElementById('results');
+    box.textContent = lines.join(' | ');
+    box.style.color = allPass ? '#2E8B57' : '#b3261e';
+    document.title = 'SELFTEST ' + (allPass ? 'OK' : 'FAILED') + ' ' + lines.filter(function (l) { return l.indexOf('PASS') === 0; }).length + '/' + lines.length;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(results, 260); });
+  else setTimeout(results, 260);
+})();
+</script>
+</body>
+</html>

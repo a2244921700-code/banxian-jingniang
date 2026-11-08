@@ -1,0 +1,38 @@
+{
+  "name": "dsh-guashi-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "半仙·鲸娘——中式传统术数 Agent preset for DeepSeek Harness：易占六门（梅花/六爻/奇门/大六壬/太乙）与命理三科（八字/紫微/七政），内置本地排盘引擎、古籍知识库检索、同工作区未归档会话记忆与卦案档案。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.json",
+    "skills/**/*",
+    "test/*.mjs",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "keywords": [
+    "deepseek",
+    "dsh",
+    "divination",
+    "yijing",
+    "meihua",
+    "liuyao",
+    "qimen",
+    "liuren",
+    "dsh-plugin"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
+

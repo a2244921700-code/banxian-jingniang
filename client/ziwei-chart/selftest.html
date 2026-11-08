@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>紫薇命盘 · 自检</title>
+<link rel="stylesheet" href="chart.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="seal">鯨</span><div><h1>紫薇命盘 · 自检</h1><p class="sub">selftest</p></div></div>
+  <div class="actions">
+    <button id="btn-shensha" class="btn">神煞</button>
+    <button id="btn-sihua" class="btn">四化</button>
+    <button id="btn-theme" class="btn">墨色</button>
+    <button id="btn-reset" class="btn">示例盘</button>
+  </div>
+</header>
+<main class="stage">
+  <section class="chart-wrap"><div id="chart" class="chart"></div></section>
+  <aside id="detail" class="detail">
+    <div class="detail-head"><h2 id="detail-title">紫薇命盘总览</h2><button id="detail-close" class="icon-btn">×</button></div>
+    <div id="detail-body" class="detail-body"></div>
+  </aside>
+</main>
+<footer class="statusbar"><span id="status"></span><span>selftest</span></footer>
+<script src="chart.js"></script>
+<script>
+(function () {
+  function report() {
+    var lines = [];
+    function check(name, ok) { lines.push((ok ? 'PASS ' : 'FAIL ') + name); }
+    var charset = document.querySelectorAll('.palace');
+    check('12宫渲染', charset.length === 12);
+    var ming = document.querySelector('.palace.ming');
+    check('命宫落在午', ming && ming.getAttribute('data-zhi') === '午');
+    check('中宫含五行局', document.querySelector('.center') &&
+      document.querySelector('.center').textContent.indexOf('火六局') >= 0);
+    check('四化标记', document.body.textContent.indexOf('太阳化禄') >= 0);
+    check('示例数据', ZiweiChart.getData().palaces.length === 12);
+    ZiweiChart.focus('午');
+    check('focus 命宫详情', document.querySelector('#detail-title').textContent.indexOf('命宫') >= 0);
+    ZiweiChart.setTheme('dark');
+    check('dark 主题', document.body.classList.contains('dark'));
+    ZiweiChart.setTheme('light');
+    ZiweiChart.toggle('sha', false);
+    check('隐藏神煞', document.body.classList.contains('hide-sha'));
+    var thrown = false;
+    try { ZiweiChart.render({ meta: {}, palaces: [] }); } catch (e) { thrown = true; }
+    check('非法数据被拒', thrown);
+    var box = document.createElement('div');
+    box.id = 'results';
+    box.setAttribute('style', 'position:fixed;left:8px;bottom:8px;font-size:11px;color:#2E8B57;background:#fff;padding:4px;z-index:99;max-width:95vw');
+    box.textContent = lines.join(' | ');
+    document.body.appendChild(box);
+    document.title = 'SELFTEST ' + (lines.every(function (l) { return l.indexOf('PASS') === 0; }) ? 'OK' : 'FAILED');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(report, 150); });
+  } else {
+    setTimeout(report, 150);
+  }
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,5 @@
+- insert:
+    - id: guashi-chart-panel
+      name: '@local/guashi-chart-panel'
+      config:
+        snapshotPath: 'D:/DSH_GuaShi/client/chart-panel/latest.json'

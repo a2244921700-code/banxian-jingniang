@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>紫薇命盘 · 半仙·鲸娘</title>
+<link rel="stylesheet" href="chart.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="seal">鯨</span>
+      <div>
+        <h1>紫薇命盘</h1>
+        <p class="sub">紫微斗数 · 十二宫 · 参考「文墨天机」盘面排布 · 前端原型 v0.1</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btn-shensha" class="btn" title="显示/隐藏神煞">神煞</button>
+      <button id="btn-sihua" class="btn" title="显示/隐藏四化标记">四化</button>
+      <button id="btn-theme" class="btn" title="切换纸张/墨色主题">墨色</button>
+      <button id="btn-reset" class="btn" title="回到示例盘">示例盘</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="chart-wrap" aria-label="紫薇命盘">
+      <div id="chart" class="chart" role="grid" aria-label="十二宫命盘"></div>
+      <div class="legend">
+        <span class="lg lg-lu">禄</span>
+        <span class="lg lg-quan">权</span>
+        <span class="lg lg-ke">科</span>
+        <span class="lg lg-ji">忌</span>
+        <span class="lg-sep"></span>
+        <span class="lg-miao">庙</span><span class="lg-wang">旺</span><span class="lg-de">得</span><span class="lg-xian">陷</span>
+        <span class="lg-sep"></span>
+        <span class="lg-note">点击宫位查看详情</span>
+      </div>
+    </section>
+
+    <aside id="detail" class="detail" aria-live="polite">
+      <div class="detail-head">
+        <h2 id="detail-title">紫薇命盘总览</h2>
+        <button id="detail-close" class="icon-btn" title="关闭">×</button>
+      </div>
+      <div id="detail-body" class="detail-body"></div>
+      <p class="api-hint">API：<code>ZiweiChart.render(data)</code> · <code>ZiweiChart.onSelect = fn</code></p>
+    </aside>
+  </main>
+
+  <footer class="statusbar">
+    <span id="status">数据：示例盘（非真实排盘）</span>
+    <span>P1 前端原型 · 后续接 <code>gua_ziwei</code> 输出 JSON</span>
+  </footer>
+
+<script src="chart.js"></script>
+</body>
+</html>
