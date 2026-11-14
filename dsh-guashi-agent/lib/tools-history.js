@@ -1,4 +1,4 @@
-﻿// gua_history / gua_case —— 跨窗口记忆与卦案档案。
+// gua_history / gua_case —— 跨窗口记忆与卦案档案。
 //
 // 两件事：
 //   1. gua_history：读「本工作区里未归档的其它聊天窗口」——用户要的是「换个窗口开
@@ -350,7 +350,7 @@ export function createHistoryTools(config, ctx) {
   const caseTool = defineTool({
     name: 'gua_case',
     description:
-      '卦案档案（长期记忆，存 D:/DSH_GuaShi/卦案/卦例记录.jsonl）。断完一卦用 record 记档（问事、方法、本卦变卦、断语、要点、应期）；用 list 查旧案；用户回来复盘或提到应验时，用 update 补记录（outcome、verified）。跨窗口/跨会话记住替谁断过什么，靠它。',
+      '卦案档案（长期记忆，存 D:/DSH_GuaShi/卦案/卦例记录.jsonl）。断完一卦用 record 记档（问事、方法、本卦变卦、断语、要点、应期）；用 list 查旧案；用户回来复盘或提到应验时，用 update 补记录（outcome、verified）。跨窗口/跨会话记住替谁断过什么，靠它。**ben/bian 只传字符串**（卦名或课体简述，如「泽火革」「阴遁三局，立冬下元」），不要传对象；盘面复杂就压成一句摘要。',
     parameters: {
       action: {
         type: 'string',
@@ -360,11 +360,11 @@ export function createHistoryTools(config, ctx) {
       },
       question: { type: 'string', description: 'record：所问何事。' },
       method: { type: 'string', description: 'record：起卦方法（梅花时间/数字、六爻、奇门、六壬）。' },
-      ben: { type: 'object', description: 'record：本卦/课体，可为对象或字符串。' },
-      bian: { type: 'object', description: 'record：变卦。' },
+      ben: { type: 'string', description: 'record：本卦/课体字符串，如「泽火革」；奇门可写「阴遁三局，立冬下元，辛亥时」等简述。' },
+      bian: { type: 'string', description: 'record：变卦字符串，如「泽山咸」；无变卦可省略。' },
       judgment: { type: 'string', description: 'record：当时的断语（结论与依据要点）。' },
-      keyPoints: { type: 'array', description: 'record：断卦要点数组。' },
-      tags: { type: 'array', description: 'record：标签，如 ["求财","跳槽"]。' },
+      keyPoints: { type: 'array', items: { type: 'string' }, description: 'record：断卦要点数组。' },
+      tags: { type: 'array', items: { type: 'string' }, description: 'record：标签，如 ["求财","跳槽"]。' },
       followUpAt: { type: 'string', description: 'record：预计验证应期，如 "2026-11-05" 或 "一月内"。' },
       query: { type: 'string', description: 'list：在问事/断语/标签里搜关键词。' },
       tag: { type: 'string', description: 'list：按标签过滤。' },

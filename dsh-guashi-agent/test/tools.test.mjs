@@ -1,4 +1,4 @@
-﻿// 工具层自检（不需要 Harness 进程）。
+// 工具层自检（不需要 Harness 进程）。
 //
 // 验证范围：
 //   1. 8 个工具的定义形状（name / parameters JSON Schema / output / execute）。
@@ -310,12 +310,15 @@ test('gua_kb：真实知识库检索', async () => {
 test('gua_case：临时目录 record / list / update', async () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'guashi-case-'))
   const tools = toolsOf(fakeCtx(), { caseDir: dir })
+  const caseDef = tools.find((tool) => tool.name === 'gua_case')
+  assert.equal(caseDef.parameters.properties.ben.type, 'string')
+  assert.equal(caseDef.parameters.properties.bian.type, 'string')
   const recorded = await call(tools, 'gua_case', {
     action: 'record',
     question: '测试：本月项目能否过审',
     method: '梅花时间',
-    ben: { fullName: '泽火革' },
-    bian: { fullName: '泽山咸' },
+    ben: '泽火革',
+    bian: '泽山咸',
     judgment: '革故鼎新之象，先难后易，宜换沟通口径。',
     keyPoints: ['体用：体离火为用，用兑金，火克金', '五爻动'],
     tags: ['测试', '工作'],
