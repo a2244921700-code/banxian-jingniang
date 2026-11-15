@@ -1,4 +1,4 @@
-﻿# 半仙·鲸娘 —— 架构说明
+# 半仙·鲸娘 —— 架构说明
 
 > 给维护者看的实现地图。用户向的说明见 `dsh-guashi-agent/README.md`；
 > 构建契约与验收口径见 `docs/SPEC.md`；逐类排盘口径/公式/实验标记见 `docs/ENGINE-RULES.md`。

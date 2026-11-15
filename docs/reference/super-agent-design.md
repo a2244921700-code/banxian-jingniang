@@ -1,4 +1,4 @@
-﻿# 参考资料：Super-agent 设计探索（DeepSeek Harness 团队）
+# 参考资料：Super-agent 设计探索（DeepSeek Harness 团队）
 
 - 来源：哔哩哔哩专栏，作者 DeepSeekHarness，2026-10-31
 - 原文：https://www.bilibili.com/opus/1265361021143351318 （cv53698541）

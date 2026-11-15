@@ -1,4 +1,4 @@
-﻿// Host half of the chart panel.
+// Host half of the chart panel.
 //
 // The gua_bazi / gua_ziwei / gua_qimen tools write the latest chart JSON to snapshotPath.
 // This Host half exposes a small RPC endpoint so the Client half can read it:
