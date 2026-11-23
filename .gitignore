@@ -1,8 +1,16 @@
-# 本地用户数据：不上传
-知识库/
+# 本地用户数据与格式限制
 资料归档/
 资料归档.rar
 卦案/
+
+# 知识库只上传 .md 文本；机读清单与非文本资料留在本机
+知识库/_META/
+知识库/**/*.pdf
+知识库/**/*.doc
+知识库/**/*.docx
+知识库/**/*.epub
+知识库/**/*.zip
+知识库/**/*.rar
 
 # 运行期快照
 client/chart-panel/latest.json
@@ -22,4 +30,3 @@ __pycache__/
 *.log
 Thumbs.db
 .DS_Store
-
